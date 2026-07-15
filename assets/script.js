@@ -1,5 +1,5 @@
 const STEAM_ID = '76561198138885098';
-const INVENTORY_API = `/api/inventory/${STEAM_ID}`;
+const INVENTORY_API = `/api/inventory.php?steamid=${STEAM_ID}`;
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 const inventoryGrid = document.querySelector('#inventory-grid');
@@ -25,7 +25,7 @@ const buildIconCandidates = (item) => {
   ])];
 };
 
-const proxyImageUrl = (remoteUrl) => `/api/image?url=${encodeURIComponent(remoteUrl)}`;
+const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(remoteUrl)}`;
 
 const loadImage = (url) => new Promise((resolve) => {
   const img = new Image();
