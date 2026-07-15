@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Serve clean URLs like /projects as /projects.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ $1.html [L]
+
+# Make sure the site root loads index.html by default
+DirectoryIndex index.html
