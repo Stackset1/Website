@@ -8,39 +8,6 @@ body {
     transform: translateZ(0);
 }
 
-.page-shell {
-    min-height: 100vh;
-    opacity: 0;
-    transform-origin: top left;
-    transform: translate(-30px, -30px) scale(0.96);
-    animation: pageReveal 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-body.loaded .page-shell {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-}
-
-@keyframes pageReveal {
-    from {
-        opacity: 0;
-        transform: translate(-30px, -30px) scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(0, 0) scale(1);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .page-shell {
-        animation: none;
-        opacity: 1;
-        transform: none;
-    }
-}
-
 * {
   margin: 0;
   padding: 0;
