@@ -8,21 +8,22 @@ const inventoryMessage = document.querySelector('.inventory-empty');
 const normalizeIconPath = (path) => {
   const normalized = String(path || '').trim();
   if (!normalized) return '';
-  return normalized.startsWith('http') || normalized.startsWith('/') ? normalized : `/${normalized}`;
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  return normalized.startsWith('/') ? normalized : `/${normalized}`;
 };
 
 const buildIconCandidates = (item) => {
   const path = normalizeIconPath(item.icon_url_large || item.icon_url || item.icon_url_small);
   if (!path) return [];
 
-  return [...new Set([
-    path,
-    `https://steamcommunity-a.akamaihd.net${path}`,
-    `https://steamcommunity-a.akamaihd.net/economy/image${path}`,
-    `https://community.cloudflare.steamstatic.com/economy/image${path}`,
-    `https://steamcdn-a.akamaihd.net/steamcommunity/public/images${path}`,
-    `https://steamcommunity.com${path}`,
-  ])];
+  const candidates = [path];
+  if (path.startsWith('/')) {
+    candidates.push(`https://steamcommunity-a.akamaihd.net${path}`);
+    candidates.push(`https://community.cloudflare.steamstatic.com/economy/image${path}`);
+    candidates.push(`https://steamcommunity.com${path}`);
+  }
+
+  return [...new Set(candidates)];
 };
 
 const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(remoteUrl)}`;
