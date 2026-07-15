@@ -1,0 +1,36 @@
+.project-list {
+    max-width: 900px;
+    margin: 40px auto 120px;
+    padding: 0 20px;
+}
+
+.project-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #f0f4ff;
+    text-align: left;
+}
+
+.project-card h2 {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+}
+
+.project-card p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.project-card a {
+    color: #c7d2ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.project-card a:hover {
+    text-decoration: underline;
+}

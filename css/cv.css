@@ -1,0 +1,47 @@
+body {
+    background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
+}
+
+main.cv-content {
+    max-width: 900px;
+    margin: 60px auto 120px;
+    padding: 0 20px;
+    color: #e6ecff;
+    text-align: left;
+}
+
+.cv-section {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.cv-section h2 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    color: #f4f7ff;
+}
+
+.cv-section p,
+.cv-section li {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #d7e1ff;
+}
+
+.cv-section ul {
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+}
+
+.cv-section li {
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 860px) {
+    .cv-section {
+        padding: 1.5rem;
+    }
+}
