@@ -343,6 +343,12 @@ main {
   margin: 0;
 }
 
+.inventory-item .inventory-meta {
+  font-size: 0.82rem;
+  color: #d7deff;
+  margin-top: 0.2rem;
+}
+
 .inventory-empty {
   color: #cbd4ff;
   margin-top: 1rem;
