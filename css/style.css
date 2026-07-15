@@ -33,7 +33,7 @@ body {
     flex-wrap: wrap;
     gap: 0.75rem 1.5rem;
     background: none;
-    margin: 20px auto;
+    margin-top: 30px auto;
     padding: 0 1rem;
     list-style-type: none;
 }
@@ -82,7 +82,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 60px auto;
+    margin: 20px auto;
     gap: 2rem;
     max-width: 1200px;
     padding: 2rem;
