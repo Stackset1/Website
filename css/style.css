@@ -162,6 +162,33 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+}
+
+#steam-inventory {
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.inventory-grid::-webkit-scrollbar {
+  width: 10px;
+}
+
+.inventory-grid::-webkit-scrollbar-thumb {
+  background: rgba(203, 212, 255, 0.45);
+  border-radius: 999px;
+}
+
+.inventory-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
 }
 
 .inventory-title {
@@ -334,6 +361,7 @@ main {
 @media (max-width: 640px) {
   .inventory-grid {
     grid-template-columns: 1fr;
+    max-height: 460px;
   }
 
   .info-grid {
