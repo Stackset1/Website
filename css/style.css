@@ -33,7 +33,7 @@ body {
     flex-wrap: wrap;
     gap: 0.75rem 1.5rem;
     background: none;
-    margin-top: 30px auto;
+  margin: 30px auto 0;
     padding: 0 1rem;
     list-style-type: none;
 }
@@ -448,10 +448,17 @@ footer {
     linear-gradient(180deg, rgba(10, 18, 38, 0.55), rgba(7, 12, 26, 0.88)),
     radial-gradient(circle at 20% -30%, rgba(122, 174, 255, 0.2), transparent 50%);
   border-top: 1px solid rgba(186, 211, 255, 0.25);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
     color: white;
     text-align: center;
   padding: 1.15rem 1rem;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  footer {
+    background: rgba(10, 18, 38, 0.9);
+  }
 }
 
 .footer-contact {
