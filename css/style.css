@@ -17,23 +17,45 @@ body {
 .nav {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
     background: none;
-    margin: 20px;
+    margin: 20px auto;
+    padding: 0 1rem;
     list-style-type: none;
+}
+
+.nav li {
+    display: flex;
 }
 
 .nav li a {
     text-decoration: none;
     color: white;
-    padding: 10px 20px;
+    padding: 10px 18px;
     display: block;
     font-weight: bold;
-    font-size: 30px;
-    margin-right: 50px;
+    font-size: clamp(1.1rem, 2vw, 1.8rem);
+    border-radius: 999px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .nav li a:hover {
-    background-color: #555;
+    background-color: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .nav {
+        gap: 0.5rem 0.75rem;
+        margin: 16px auto 12px;
+    }
+
+    .nav li a {
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
 }
 
 main {

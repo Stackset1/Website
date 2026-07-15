@@ -47,10 +47,15 @@ const setImageWithFallback = async (imgElem, item) => {
   imgElem.src = TRANSPARENT_PIXEL;
 };
 
-const isCovertItem = (item) => Array.isArray(item.tags) && item.tags.some((tag) => {
-  const value = String(tag.localized_tag_name || tag.name || tag.internal_name || '').toLowerCase();
-  return value.includes('covert');
-});
+const isRelevantItem = (item) => {
+  const tags = Array.isArray(item.tags) ? item.tags : [];
+  const tagValues = tags.map((tag) => String(tag.localized_tag_name || tag.name || tag.internal_name || '').toLowerCase());
+
+  const matchesCovert = tagValues.some((value) => value.includes('covert'));
+  const matchesGlove = tagValues.some((value) => value.includes('glove')) || String(item.type || '').toLowerCase().includes('glove') || String(item.market_hash_name || '').toLowerCase().includes('glove');
+
+  return matchesCovert || matchesGlove;
+};
 
 const renderInventory = (items) => {
   if (!inventoryGrid) return;
@@ -61,11 +66,11 @@ const renderInventory = (items) => {
     return;
   }
 
-  const covertItems = items.filter(isCovertItem);
-  if (inventoryMessage) inventoryMessage.textContent = `Showing ${covertItems.length} covert items.`;
-  if (covertItems.length === 0) return;
+  const relevantItems = items.filter(isRelevantItem);
+  if (inventoryMessage) inventoryMessage.textContent = `Showing ${relevantItems.length} relevant items.`;
+  if (relevantItems.length === 0) return;
 
-  covertItems.forEach((item) => {
+  relevantItems.forEach((item) => {
     const card = document.createElement('div');
     card.className = 'inventory-item';
 
