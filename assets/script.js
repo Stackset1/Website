@@ -67,7 +67,7 @@ const renderInventory = (items) => {
   }
 
   const relevantItems = items.filter(isRelevantItem);
-  if (inventoryMessage) inventoryMessage.textContent = `Showing ${relevantItems.length} relevant items.`;
+  if (inventoryMessage) inventoryMessage.textContent = `Showing ${relevantItems.length} relevant items. Covert only!`;
   if (relevantItems.length === 0) return;
 
   relevantItems.forEach((item) => {

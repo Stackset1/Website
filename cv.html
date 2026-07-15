@@ -8,37 +8,44 @@
         <link rel="stylesheet" href="css/cv.css?v=20260715">
     </head>
     <body>
-        <div class="stars"></div>
-        <div class="shooting-star"></div>
-        <div class="shooting-star"></div>
-        <div class="shooting-star"></div>
-        <div class="shooting-star"></div>
-        <div class="shooting-star"></div>
+        <div class="page-shell">
+            <div class="stars"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
 
-        <!-- Header -->
-        <header>
-            <nav aria-label="Menu">
-                <ul class="nav">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/projects">Projects</a></li>
-                    <li><a href="/cv">CV</a></li>
-                </ul>
-            </nav>
-        </header>
+            <!-- Header -->
+            <header>
+                <nav aria-label="Menu">
+                    <ul class="nav">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/projects">Projects</a></li>
+                        <li><a href="/cv">CV</a></li>
+                    </ul>
+                </nav>
+            </header>
 
-        <!-- Main content -->
-        <main>
-        </main>
-        
-        <!-- Footer -->
-        <footer>
+            <!-- Main content -->
+            <main>
+            </main>
+            
+            <!-- Footer -->
+            <footer>
                 <div class="footer-contact">
-                <a href="mailto:stackset@hotmail.no">Email</a>
-                <a href="https://www.linkedin.com/in/thomas-stakset-1356b8275" target="_blank" rel="noopener">LinkedIn</a>
-                <a href="tel:+4745517356">Phone</a>
-                <a href="https://github.com/Stackset1" target="_blank" rel="noopener">GitHub</a>
-            </div>
-        </footer>
-        
+                    <a href="mailto:stackset@hotmail.no">Email</a>
+                    <a href="https://www.linkedin.com/in/thomas-stakset-1356b8275" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="tel:+4745517356">Phone</a>
+                    <a href="https://github.com/Stackset1" target="_blank" rel="noopener">GitHub</a>
+                </div>
+            </footer>
+        </div>
+
+        <script>
+            window.addEventListener('load', () => {
+                document.body.classList.add('loaded');
+            });
+        </script>
     </body>
 </html>
