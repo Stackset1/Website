@@ -3,7 +3,8 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/uxethegx/public_html/
     - /bin/cp index.html cv.html projects.html .htaccess $DEPLOYPATH
-    - /bin/cp -R css $DEPLOYPATH
-    - /bin/cp -R images $DEPLOYPATH
-    - /bin/cp -R assets $DEPLOYPATH
-    - /bin/cp -R api $DEPLOYPATH
+    - /bin/mkdir -p $DEPLOYPATH/css $DEPLOYPATH/images $DEPLOYPATH/assets $DEPLOYPATH/api
+    - /bin/cp -R css/. $DEPLOYPATH/css/
+    - /bin/cp -R images/. $DEPLOYPATH/images/
+    - /bin/cp -R assets/. $DEPLOYPATH/assets/
+    - /bin/cp -R api/. $DEPLOYPATH/api/
