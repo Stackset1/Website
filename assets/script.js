@@ -1,7 +1,6 @@
 const STEAM_ID = '76561198138885098';
 const INVENTORY_API = `/api/inventory.php?steamid=${STEAM_ID}`;
 const PRICE_API = '/api/price.php';
-const FLOAT_API = '/api/float.php';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 const MAX_CONCURRENT_LOOKUPS = 4;
 
@@ -11,8 +10,6 @@ const lookupQueue = [];
 let activeLookups = 0;
 const priceCache = new Map();
 const pricePending = new Map();
-const floatCache = new Map();
-const floatPending = new Map();
 
 const valueObserver = inventoryGrid
   ? new IntersectionObserver((entries) => {
@@ -20,7 +17,7 @@ const valueObserver = inventoryGrid
       if (!entry.isIntersecting) return;
       const target = entry.target;
       valueObserver.unobserve(target);
-      loadMarketData(target.__item, target.__priceElem, target.__floatElem);
+      loadMarketData(target.__item, target.__priceElem);
     });
   }, { root: inventoryGrid, rootMargin: '150px 0px' })
   : null;
@@ -80,18 +77,6 @@ const buildIconCandidates = (item) => {
 
 const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(remoteUrl)}`;
 
-const buildInspectUrl = (item) => {
-  const actions = Array.isArray(item.actions) ? item.actions : [];
-  const previewAction = actions.find((action) => String(action.link || '').includes('%assetid%'));
-  if (!previewAction || !previewAction.link) return null;
-
-  return String(previewAction.link)
-    .replace(/%assetid%/g, String(item.assetid || ''))
-    .replace(/%owner_steamid%/g, STEAM_ID)
-    .replace(/%contextid%/g, String(item.contextid || '2'))
-    .replace(/%appid%/g, String(item.appid || '730'));
-};
-
 const loadImage = (url) => new Promise((resolve) => {
   const img = new Image();
   img.onload = () => resolve(true);
@@ -130,39 +115,26 @@ const getPriceByMarketHashName = async (marketHashName) => {
   return pending;
 };
 
-const getFloatByInspectUrl = async (inspectUrl) => {
-  const key = String(inspectUrl || '').trim();
-  if (!key) return null;
-  if (floatCache.has(key)) return floatCache.get(key);
-  if (floatPending.has(key)) return floatPending.get(key);
+const loadMarketData = async (item, priceElem) => {
+  if (!item || !priceElem) return;
 
-  const pending = enqueueLookup(async () => {
-    const query = `${FLOAT_API}?inspect_url=${encodeURIComponent(key)}`;
-    const data = await safeFetchJson(query);
-    const value = Number(data?.iteminfo?.floatvalue);
-    const parsedValue = Number.isFinite(value) ? value : null;
-    floatCache.set(key, parsedValue);
-    floatPending.delete(key);
-    return parsedValue;
-  });
-
-  floatPending.set(key, pending);
-  return pending;
+  const price = await getPriceByMarketHashName(item.market_hash_name);
+  priceElem.textContent = `Price: ${price || 'N/A'}`;
 };
 
-const loadMarketData = async (item, priceElem, floatElem) => {
-  if (!item || !priceElem || !floatElem) return;
+const isRelevantItem = (item) => {
+  const tags = Array.isArray(item.tags) ? item.tags : [];
+  const tagValues = tags.map((tag) => String(tag.localized_tag_name || tag.name || tag.internal_name || '').toLowerCase());
+  const typeValue = String(item.type || '').toLowerCase();
+  const nameValue = String(item.market_hash_name || '').toLowerCase();
 
-  const inspectUrl = buildInspectUrl(item);
-  const [price, floatValue] = await Promise.all([
-    getPriceByMarketHashName(item.market_hash_name),
-    inspectUrl ? getFloatByInspectUrl(inspectUrl) : Promise.resolve(null),
-  ]);
+  const isCovert = tagValues.some((value) => value.includes('covert'));
+  const isClassified = tagValues.some((value) => value.includes('classified'));
+  const isGloves = tagValues.some((value) => value.includes('glove'))
+    || typeValue.includes('glove')
+    || nameValue.includes('glove');
 
-  priceElem.textContent = `Price: ${price || 'N/A'}`;
-  floatElem.textContent = Number.isFinite(floatValue)
-    ? `Float: ${floatValue.toFixed(5)}`
-    : 'Float: N/A';
+  return isCovert || isClassified || isGloves;
 };
 
 const mapInventoryItems = (data) => {
@@ -194,9 +166,14 @@ const renderInventory = (items) => {
     return;
   }
 
-  if (inventoryMessage) inventoryMessage.textContent = `Showing ${items.length} items.`;
+  const relevantItems = items.filter(isRelevantItem);
+  if (inventoryMessage) inventoryMessage.textContent = `Showing ${relevantItems.length} covert, classified, and glove items.`;
 
-  items.forEach((item) => {
+  if (relevantItems.length === 0) {
+    return;
+  }
+
+  relevantItems.forEach((item) => {
     const card = document.createElement('div');
     card.className = 'inventory-item';
 
@@ -217,21 +194,16 @@ const renderInventory = (items) => {
     priceP.className = 'inventory-meta';
     priceP.textContent = 'Price: loading...';
 
-    const floatP = document.createElement('p');
-    floatP.className = 'inventory-meta';
-    floatP.textContent = 'Float: loading...';
-
-    card.append(imgElem, title, typeP, priceP, floatP);
+    card.append(imgElem, title, typeP, priceP);
     inventoryGrid.appendChild(card);
     setImageWithFallback(imgElem, item);
 
     if (valueObserver) {
       card.__item = item;
       card.__priceElem = priceP;
-      card.__floatElem = floatP;
       valueObserver.observe(card);
     } else {
-      loadMarketData(item, priceP, floatP);
+      loadMarketData(item, priceP);
     }
   });
 };
