@@ -3,6 +3,7 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     min-height: 100vh;
+    animation: fadeInPage 0.8s ease-out forwards;
     background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
     overflow-x: hidden;
     transform: translateZ(0);
@@ -12,6 +13,17 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nav {
