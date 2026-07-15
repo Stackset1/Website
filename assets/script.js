@@ -16,7 +16,11 @@ const buildIconCandidates = (item) => {
   const path = normalizeIconPath(item.icon_url_large || item.icon_url || item.icon_url_small);
   if (!path) return [];
 
-  const candidates = [path];
+  if (/^https?:\/\//i.test(path)) {
+    return [path];
+  }
+
+  const candidates = [];
   if (path.startsWith('/')) {
     candidates.push(`https://steamcommunity-a.akamaihd.net${path}`);
     candidates.push(`https://community.cloudflare.steamstatic.com/economy/image${path}`);
