@@ -19,7 +19,7 @@ const valueObserver = inventoryGrid
       valueObserver.unobserve(target);
       loadMarketData(target.__item, target.__priceElem);
     });
-  }, { root: inventoryGrid, rootMargin: '150px 0px' })
+  }, { root: inventoryGrid, rootMargin: '50px' })
   : null;
 
 const pumpLookupQueue = () => {
@@ -77,23 +77,22 @@ const buildIconCandidates = (item) => {
 
 const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(remoteUrl)}`;
 
-const loadImage = (url) => new Promise((resolve) => {
-  const img = new Image();
-  img.onload = () => resolve(true);
-  img.onerror = () => resolve(false);
-  img.src = url;
-});
-
 const setImageWithFallback = async (imgElem, item) => {
   const candidates = buildIconCandidates(item);
-  for (const candidate of candidates) {
-    const ok = await loadImage(proxyImageUrl(candidate));
-    if (ok) {
-      imgElem.src = proxyImageUrl(candidate);
-      return;
-    }
+  if (!candidates.length) {
+    imgElem.src = TRANSPARENT_PIXEL;
+    return;
   }
-  imgElem.src = TRANSPARENT_PIXEL;
+
+  // Use first candidate with fallback to transparent pixel
+  const primaryUrl = proxyImageUrl(candidates[0]);
+  imgElem.src = primaryUrl;
+  
+  // Fallback silently on error without additional requests
+  imgElem.onerror = () => {
+    imgElem.onerror = null;
+    imgElem.src = TRANSPARENT_PIXEL;
+  };
 };
 
 const getPriceByMarketHashName = async (marketHashName) => {
@@ -173,6 +172,10 @@ const renderInventory = (items) => {
     return;
   }
 
+  // Create all DOM elements first
+  const fragment = document.createDocumentFragment();
+  const imageSetupTasks = [];
+
   relevantItems.forEach((item) => {
     const card = document.createElement('div');
     card.className = 'inventory-item';
@@ -195,8 +198,10 @@ const renderInventory = (items) => {
     priceP.textContent = 'Price: loading...';
 
     card.append(imgElem, title, typeP, priceP);
-    inventoryGrid.appendChild(card);
-    setImageWithFallback(imgElem, item);
+    fragment.appendChild(card);
+
+    // Defer image setup to batch operation
+    imageSetupTasks.push(() => setImageWithFallback(imgElem, item));
 
     if (valueObserver) {
       card.__item = item;
@@ -206,6 +211,13 @@ const renderInventory = (items) => {
       loadMarketData(item, priceP);
     }
   });
+
+  inventoryGrid.appendChild(fragment);
+
+  // Setup images async in batch, prioritizing visible items
+  requestIdleCallback(() => {
+    imageSetupTasks.forEach(task => task());
+  }, { timeout: 1000 });
 };
 
 async function getCS2Inventory() {

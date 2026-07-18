@@ -208,6 +208,7 @@ main {
   max-height: 520px;
   overflow-y: auto;
   padding-right: 0.35rem;
+  contain: layout style paint;
 }
 
 #steam-inventory {
@@ -365,6 +366,8 @@ main {
   align-items: center;
   text-align: center;
   min-height: 220px;
+  contain: content;
+  will-change: transform;
 }
 
 .inventory-item img {
@@ -372,6 +375,7 @@ main {
   height: 88px;
   object-fit: contain;
   margin-bottom: 0.85rem;
+  contain: strict;
 }
 
 .inventory-item h3 {
