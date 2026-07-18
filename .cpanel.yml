@@ -8,3 +8,5 @@ deployment:
     - /bin/cp -R images/. $DEPLOYPATH/images/
     - /bin/cp -R assets/. $DEPLOYPATH/assets/
     - /bin/cp -R api/. $DEPLOYPATH/api/
+    - /bin/mkdir -p $DEPLOYPATH/videos
+    - /bin/cp -R videos/. $DEPLOYPATH/videos/
