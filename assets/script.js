@@ -80,6 +80,7 @@ const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(re
 const setImageWithFallback = async (imgElem, item) => {
   const candidates = buildIconCandidates(item);
   if (!candidates.length) {
+    console.warn('No image candidates for item:', item.market_hash_name);
     imgElem.src = TRANSPARENT_PIXEL;
     return;
   }
@@ -90,8 +91,13 @@ const setImageWithFallback = async (imgElem, item) => {
   
   // Fallback silently on error without additional requests
   imgElem.onerror = () => {
+    console.warn('Image failed to load:', primaryUrl);
     imgElem.onerror = null;
     imgElem.src = TRANSPARENT_PIXEL;
+  };
+  
+  imgElem.onload = () => {
+    console.debug('Image loaded successfully:', primaryUrl);
   };
 };
 
@@ -194,7 +200,6 @@ const renderInventory = (items) => {
 
   // Create all DOM elements first
   const fragment = document.createDocumentFragment();
-  const imageSetupTasks = [];
 
   relevantItems.forEach((item) => {
     const card = document.createElement('div');
@@ -203,7 +208,6 @@ const renderInventory = (items) => {
     const imgElem = document.createElement('img');
     imgElem.alt = item.market_hash_name || 'CS2 item';
     imgElem.loading = 'lazy';
-    imgElem.src = TRANSPARENT_PIXEL;
 
     const title = document.createElement('h3');
     const amount = Number(item.amount || 1);
@@ -220,8 +224,8 @@ const renderInventory = (items) => {
     card.append(imgElem, title, typeP, priceP);
     fragment.appendChild(card);
 
-    // Defer image setup to batch operation
-    imageSetupTasks.push(() => setImageWithFallback(imgElem, item));
+    // Set up image immediately
+    setImageWithFallback(imgElem, item);
 
     if (valueObserver) {
       card.__item = item;
@@ -233,11 +237,6 @@ const renderInventory = (items) => {
   });
 
   inventoryGrid.appendChild(fragment);
-
-  // Setup images async in batch, prioritizing visible items
-  requestIdleCallback(() => {
-    imageSetupTasks.forEach(task => task());
-  }, { timeout: 1000 });
 };
 
 async function getCS2Inventory() {
