@@ -77,6 +77,13 @@ const buildIconCandidates = (item) => {
 
 const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(remoteUrl)}`;
 
+const loadImage = (url) => new Promise((resolve) => {
+  const img = new Image();
+  img.onload = () => resolve(true);
+  img.onerror = () => resolve(false);
+  img.src = url;
+});
+
 const setImageWithFallback = async (imgElem, item) => {
   const candidates = buildIconCandidates(item);
   for (const candidate of candidates) {
