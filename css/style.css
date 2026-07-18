@@ -280,7 +280,7 @@ main {
   background: #121212;
 }
 
-.dancing-gif {
+.dancing-webp {
   width: 46px;
   height: auto;
   border-radius: 10px;
@@ -346,7 +346,7 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .dancing-gif {
+  .dancing-webp {
     width: 40px;
   }
 
