@@ -79,26 +79,14 @@ const proxyImageUrl = (remoteUrl) => `/api/image.php?url=${encodeURIComponent(re
 
 const setImageWithFallback = async (imgElem, item) => {
   const candidates = buildIconCandidates(item);
-  if (!candidates.length) {
-    console.warn('No image candidates for item:', item.market_hash_name);
-    imgElem.src = TRANSPARENT_PIXEL;
-    return;
+  for (const candidate of candidates) {
+    const ok = await loadImage(candidate);
+    if (ok) {
+      imgElem.src = candidate;
+      return;
+    }
   }
-
-  // Use first candidate with fallback to transparent pixel
-  const primaryUrl = proxyImageUrl(candidates[0]);
-  imgElem.src = primaryUrl;
-  
-  // Fallback silently on error without additional requests
-  imgElem.onerror = () => {
-    console.warn('Image failed to load:', primaryUrl);
-    imgElem.onerror = null;
-    imgElem.src = TRANSPARENT_PIXEL;
-  };
-  
-  imgElem.onload = () => {
-    console.debug('Image loaded successfully:', primaryUrl);
-  };
+  imgElem.src = TRANSPARENT_PIXEL;
 };
 
 const getPriceByMarketHashName = async (marketHashName) => {

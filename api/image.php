@@ -43,11 +43,18 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
 $data = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curlError = curl_error($ch);
 curl_close($ch);
 
-if ($data === false || $httpCode >= 400) {
+if ($data === false) {
     http_response_code(502);
-    echo 'Failed to fetch image';
+    echo json_encode(['error' => 'Failed to fetch image', 'details' => $curlError]);
+    exit;
+}
+
+if ($httpCode >= 400) {
+    http_response_code(502);
+    echo json_encode(['error' => 'Failed to fetch image', 'http_code' => $httpCode]);
     exit;
 }
 
