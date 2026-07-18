@@ -11,7 +11,7 @@ if ($marketHashName === '') {
 $cacheKey = md5($marketHashName);
 $cacheDir = sys_get_temp_dir();
 $cacheFile = $cacheDir . '/steam-price-' . $cacheKey . '.json';
-$cacheTtlSeconds = 3600; // 1 hour cache
+$cacheTtlSeconds = 86400; // 24 hours cache
 
 // Check valid cache first
 if (file_exists($cacheFile)) {
