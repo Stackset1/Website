@@ -119,7 +119,7 @@ const loadMarketData = async (item, priceElem) => {
   if (!item || !priceElem) return;
 
   const price = await getPriceByMarketHashName(item.market_hash_name);
-  priceElem.textContent = `Price: ${price || 'N/A'}`;
+  priceElem.textContent = `Price: ${price || 'Price unavailable'}`;
 };
 
 const isRelevantItem = (item) => {
