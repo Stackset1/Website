@@ -394,6 +394,7 @@ main {
   font-size: 0.82rem;
   color: #d7deff;
   margin-top: 0.2rem;
+  min-height: 1.2em;
 }
 
 .inventory-empty {

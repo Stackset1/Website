@@ -102,12 +102,26 @@ const getPriceByMarketHashName = async (marketHashName) => {
   if (pricePending.has(key)) return pricePending.get(key);
 
   const pending = enqueueLookup(async () => {
-    const query = `${PRICE_API}?market_hash_name=${encodeURIComponent(key)}`;
-    const data = await safeFetchJson(query);
-    const value = data?.lowest_price || data?.median_price || null;
-    priceCache.set(key, value);
-    pricePending.delete(key);
-    return value;
+    try {
+      const query = `${PRICE_API}?market_hash_name=${encodeURIComponent(key)}`;
+      const data = await safeFetchJson(query);
+      
+      if (!data) {
+        priceCache.set(key, null);
+        pricePending.delete(key);
+        return null;
+      }
+      
+      const value = data?.lowest_price || data?.median_price || null;
+      priceCache.set(key, value);
+      pricePending.delete(key);
+      return value;
+    } catch (error) {
+      console.error(`Failed to fetch price for ${key}:`, error);
+      priceCache.set(key, null);
+      pricePending.delete(key);
+      return null;
+    }
   });
 
   pricePending.set(key, pending);
@@ -117,8 +131,14 @@ const getPriceByMarketHashName = async (marketHashName) => {
 const loadMarketData = async (item, priceElem) => {
   if (!item || !priceElem) return;
 
-  const price = await getPriceByMarketHashName(item.market_hash_name);
-  priceElem.textContent = `Price: ${price || 'N/A'}`;
+  try {
+    const price = await getPriceByMarketHashName(item.market_hash_name);
+    const displayPrice = price ? `$${price}` : 'Price unavailable';
+    priceElem.textContent = displayPrice;
+  } catch (error) {
+    priceElem.textContent = 'Price unavailable';
+    console.error('Error loading market data:', error);
+  }
 };
 
 const isRelevantItem = (item) => {
@@ -195,7 +215,7 @@ const renderInventory = (items) => {
 
     const priceP = document.createElement('p');
     priceP.className = 'inventory-meta';
-    priceP.textContent = 'Price: loading...';
+    priceP.textContent = 'Loading price...';
 
     card.append(imgElem, title, typeP, priceP);
     fragment.appendChild(card);
