@@ -2,7 +2,7 @@ const STEAM_ID = '76561198138885098';
 const INVENTORY_API = `/api/inventory.php?steamid=${STEAM_ID}`;
 const PRICE_API = '/api/price.php';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-const MAX_CONCURRENT_LOOKUPS = 2;
+const MAX_CONCURRENT_LOOKUPS = 4;
 
 const inventoryGrid = document.querySelector('#inventory-grid');
 const inventoryMessage = document.querySelector('.inventory-empty');
@@ -19,7 +19,7 @@ const valueObserver = inventoryGrid
       valueObserver.unobserve(target);
       loadMarketData(target.__item, target.__priceElem);
     });
-  }, { root: inventoryGrid, rootMargin: '50px' })
+  }, { root: inventoryGrid, rootMargin: '150px 0px' })
   : null;
 
 const pumpLookupQueue = () => {
@@ -108,26 +108,12 @@ const getPriceByMarketHashName = async (marketHashName) => {
   if (pricePending.has(key)) return pricePending.get(key);
 
   const pending = enqueueLookup(async () => {
-    try {
-      const query = `${PRICE_API}?market_hash_name=${encodeURIComponent(key)}`;
-      const data = await safeFetchJson(query);
-      
-      if (!data) {
-        priceCache.set(key, null);
-        pricePending.delete(key);
-        return null;
-      }
-      
-      const value = data?.lowest_price || data?.median_price || null;
-      priceCache.set(key, value);
-      pricePending.delete(key);
-      return value;
-    } catch (error) {
-      console.error(`Failed to fetch price for ${key}:`, error);
-      priceCache.set(key, null);
-      pricePending.delete(key);
-      return null;
-    }
+    const query = `${PRICE_API}?market_hash_name=${encodeURIComponent(key)}`;
+    const data = await safeFetchJson(query);
+    const value = data?.lowest_price || data?.median_price || null;
+    priceCache.set(key, value);
+    pricePending.delete(key);
+    return value;
   });
 
   pricePending.set(key, pending);
@@ -137,14 +123,8 @@ const getPriceByMarketHashName = async (marketHashName) => {
 const loadMarketData = async (item, priceElem) => {
   if (!item || !priceElem) return;
 
-  try {
-    const price = await getPriceByMarketHashName(item.market_hash_name);
-    const displayPrice = price ? `$${price}` : 'Price unavailable';
-    priceElem.textContent = displayPrice;
-  } catch (error) {
-    priceElem.textContent = 'Price unavailable';
-    console.error('Error loading market data:', error);
-  }
+  const price = await getPriceByMarketHashName(item.market_hash_name);
+  priceElem.textContent = `Price: ${price || 'N/A'}`;
 };
 
 const isRelevantItem = (item) => {
@@ -200,6 +180,7 @@ const renderInventory = (items) => {
 
   // Create all DOM elements first
   const fragment = document.createDocumentFragment();
+  const imageSetupTasks = [];
 
   relevantItems.forEach((item) => {
     const card = document.createElement('div');
@@ -208,6 +189,7 @@ const renderInventory = (items) => {
     const imgElem = document.createElement('img');
     imgElem.alt = item.market_hash_name || 'CS2 item';
     imgElem.loading = 'lazy';
+    imgElem.src = TRANSPARENT_PIXEL;
 
     const title = document.createElement('h3');
     const amount = Number(item.amount || 1);
@@ -219,13 +201,13 @@ const renderInventory = (items) => {
 
     const priceP = document.createElement('p');
     priceP.className = 'inventory-meta';
-    priceP.textContent = 'Loading price...';
+    priceP.textContent = 'Price: loading...';
 
     card.append(imgElem, title, typeP, priceP);
     fragment.appendChild(card);
 
-    // Set up image immediately
-    setImageWithFallback(imgElem, item);
+    // Defer image setup to batch operation
+    imageSetupTasks.push(() => setImageWithFallback(imgElem, item));
 
     if (valueObserver) {
       card.__item = item;
@@ -237,6 +219,11 @@ const renderInventory = (items) => {
   });
 
   inventoryGrid.appendChild(fragment);
+
+  // Setup images async in batch, prioritizing visible items
+  requestIdleCallback(() => {
+    imageSetupTasks.forEach(task => task());
+  }, { timeout: 1000 });
 };
 
 async function getCS2Inventory() {
