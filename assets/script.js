@@ -2,7 +2,7 @@ const STEAM_ID = '76561198138885098';
 const INVENTORY_API = `/api/inventory.php?steamid=${STEAM_ID}`;
 const PRICE_API = '/api/price.php';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-const MAX_CONCURRENT_LOOKUPS = 4;
+const MAX_CONCURRENT_LOOKUPS = 2;
 
 const inventoryGrid = document.querySelector('#inventory-grid');
 const inventoryMessage = document.querySelector('.inventory-empty');
